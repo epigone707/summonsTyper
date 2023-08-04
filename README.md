@@ -1,5 +1,7 @@
 # summonsTyper
-A simple app that helps users practice reprint summons.
+An app that helps users practice reprint summons, built by Electron.
+
+一个基于Electron的、用于练习翻打传票的小应用。
 
 # Usage
 TODO
