@@ -19,6 +19,3 @@ Then Run:
 ```
 npm run make
 ```
-
-# Some Words
-Build for my friend. 帮朋友做来练习的。
