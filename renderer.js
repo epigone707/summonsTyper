@@ -1,23 +1,82 @@
-
+const fs = require('fs');
 
 var numbersArray = []; // expected
 var userInputArray = []; // user input
 var intervalId = null;
 
-function readInput() {
 
-    fs.readFile('input.txt', 'utf8', (err, data) => {
-        if (err) {
-            console.error('Error reading "input.txt":', err);
-        } else {
-            numbersArray = data
-                .trim()
-                .split('\n')
-                .map((line) => parseFloat(line));
-        }
-    });
+let options = {
+    timeZone: 'Asia/Shanghai',
+    year: 'numeric',
+    month: 'numeric',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+};
+let formatter = new Intl.DateTimeFormat([], options);
+
+
+function readInput() {
+    const data = fs.readFileSync('input.txt', { encoding: 'utf8', flag: 'r' });
+    numbersArray = data
+        .trim()
+        .split('\n')
+        .map((line) => parseFloat(line));
 }
 
+/**
+ * 
+ * @returns {void}
+ * @description read the history.txt where each line contains a timestamp, an integer and 
+ * an integer separated by a space. The first integer is the incorrect number user entered 
+ * in that test, and the second integer is the time used in that test.
+ */
+function readHistory() {
+    console.log("readHistory()");
+
+    let historyArray = [];
+
+    const data = fs.readFileSync('history.txt', { encoding: 'utf8', flag: 'r' });
+    let tmpArray = data
+        .trim()
+        .split('\n')
+        .map((line) => line.split(","));
+
+    for (let i = 0; i < tmpArray.length; i++) {
+        if (tmpArray[i].length != 3) { continue; }
+        historyArray.push(tmpArray[i]);
+    }
+    console.log("historyArray: " + historyArray)
+
+    return historyArray;
+}
+
+
+/** 
+    * @param {Array} historyArray
+    * @param {string} timestamp
+    * @param {string} incorrectNumber
+    * @param {string} timeUsed
+    * @returns {void}
+    * @description
+    * This function adds a new score to the historyArray and writes the historyArray to the history.txt file.
+*/
+function addToHistory(historyArray, timestamp, incorrectNumber, timeUsed) {
+    console.log("addToHistory()");
+
+    const newScore = timestamp + "," + incorrectNumber + "," + timeUsed;
+
+    console.log("newScore: " + newScore)
+    console.log("old historyArray: " + historyArray)
+
+    var fs = require('fs');
+
+    var file = fs.createWriteStream('history.txt');
+    file.on('error', function (err) { Console.log(err) });
+    historyArray.forEach(row => file.write(`${row[0]},${row[1]},${row[2]}\n`));
+    file.write(`${newScore}\n`);
+    file.end();
+}
 
 function myTimer() {
     console.log('myTimer')
@@ -29,6 +88,7 @@ $(document).ready(function () {
     $("#startButton").click(function () {
         console.log('start test')
         $('#testPanel').css("display", 'block');
+        $('#historyBoard').css("display", 'none');
         readInput();
         console.log("numbersArray: " + numbersArray);
 
@@ -40,7 +100,6 @@ $(document).ready(function () {
         intervalId = setInterval(myTimer, 1000);
 
         $("#startButton").css("display", "none");
-        $("#generateButton").css("display", "none");
         $("#exitButton").css("display", "block");
         $("#msg").css("visibility", 'hidden');
     });
@@ -50,7 +109,6 @@ $(document).ready(function () {
         numbersArray = [];
         userInputArray = [];
         $("#startButton").css("display", "block");
-        $("#generateButton").css("display", "block");
         $("#exitButton").css("display", "none");
         $('#testPanel').css("display", 'none');
         $("#scoreBoard").css("display", 'none');
@@ -59,12 +117,25 @@ $(document).ready(function () {
         $("#countLabel").text("1");
     });
 
+    $("#historyButton").click(function () {
+        console.log('historyButton clicked')
 
-    $("#generateButton").click(function () {
-        generateRandomInputFile();
-        $("#msg").text("成功生成新的测试, 已保存至input.txt文件中。")
-        $("#msg").css("visibility", 'visible');
-    })
+        $("#historyBoard").css("display", 'block');
+        $("#historyButton").css("display", 'none');
+        $("#historyTable tbody tr").remove();
+
+        let history = readHistory();
+        console.log("history: " + history)
+        while (history.length > 100) {
+            history.shift();
+        }
+        let tableBody = $("#historyTable tbody");
+        for (let i = 0; i < history.length; i++) {
+            newRow = "<tr><td>" + history[i][0] + "</td><td>" + history[i][1] + "</td><td>" + history[i][2] + "</td></tr>";
+            tableBody.append(newRow);
+        }
+
+    });
 
 
 
@@ -106,19 +177,25 @@ $(document).ready(function () {
                         $("#compareResult").text("您的结果错误！具体错误如下：");
 
                     }
-                    compareTable = $("#compareTable")
-                    tableBody = $("#compareTable tbody");
+                    let tableBody = $("#compareTable tbody");
+
+                    let incorrectNumber = 0;
                     for (let i = 0; i < numbersArray.length; i++) {
                         if (numbersArray[i] === userInputArray[i]) {
                             console.log("numbersArray[i]:", numbersArray[i])
                             console.log("userInputArray[i]:", userInputArray[i])
                             newRow = "<tr><td>" + userInputArray[i] + "</td><td>" + numbersArray[i] + "</td></tr>";
                         } else {
+                            incorrectNumber += 1;
                             newRow = "<tr class='wrongRow'><td>" + userInputArray[i] + "</td><td>" + numbersArray[i] + "</td></tr>";
                         }
 
                         tableBody.append(newRow);
                     }
+
+                    let historyArray = readHistory();
+                    addToHistory(historyArray, formatter.format(new Date()), incorrectNumber.toString(), timerLabel.text());
+                    $("#historyButton").css("display", 'block');
                 }
             }
         }

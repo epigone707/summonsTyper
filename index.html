@@ -4,7 +4,6 @@
 <head>
     <title>传票练习</title>
     <script> let $ = require("jquery") </script>
-    <script type="text/javascript" src="generate_input.js"></script>
     <script type="text/javascript" src="renderer.js"></script>
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
@@ -50,9 +49,25 @@
             </table>
         </div>
 
+        <div id="historyBoard" style="display: none;">
+            <h2>您的历史成绩(只显示近期100次测试) :</h2>
+            <table id="historyTable" style="width:100%;">
+                <thead>
+                    <tr>
+                        <th>测试时间</th>
+                        <th>错误数</th>
+                        <th>用时</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+
+            </table>
+        </div>
+
         <button id="startButton" class="btn btn-primary">开始测试</button>
-        <button id="generateButton" class="btn btn-success">生成测试</button>
         <button id="exitButton" class="btn btn-secondary" style="display: none;">退出测试</button>
+        <button id="historyButton" class="btn btn-secondary">历史成绩</button>
         <p id="msg" style="visibility: hidden;"></p>
 
     </div>
