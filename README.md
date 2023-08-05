@@ -38,7 +38,7 @@ You can also check your score history 查看历史成绩:
 # Installation
 
 ## Option 1. Install executable
-You can install the executables from [the release page](https://github.com/epigone707/summonsTyper/releases/tag/v1.0)
+You can install the executables from [the release page](https://github.com/epigone707/summonsTyper/releases)
 
 ## Option 2. Build From Source
 First, install Electron Forge:
