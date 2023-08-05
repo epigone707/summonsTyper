@@ -19,7 +19,8 @@ An app that helps users practice reprint summons, built by Electron. 一个基�
 
 
 Main page 主界面:
-![image](https://github.com/epigone707/summonsTyper/assets/62321106/15ec1bd6-39ed-4a8d-b3d5-fee2a7b99fd0)
+![image](https://github.com/epigone707/summonsTyper/assets/62321106/047aead6-2c53-48a4-977a-8a3c3688ac8c)
+
 
 Start the test 开始测试:
 ![image](https://github.com/epigone707/summonsTyper/assets/62321106/f995dfca-156a-45c0-96a5-24f96151b74b)
