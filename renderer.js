@@ -1,9 +1,18 @@
 const fs = require('fs');
 
-var numbersArray = []; // expected
-var userInputArray = []; // user input
-var intervalId = null;
 
+/**
+ * @type {string[]} numbersArray, the expected numbers in this test
+ */
+var numbersArray = [];
+
+
+/**
+ * @type {string[]} userInputArray
+ */
+var userInputArray = [];
+
+var intervalId = null;
 
 let options = {
     timeZone: 'Asia/Shanghai',
@@ -16,12 +25,22 @@ let options = {
 let formatter = new Intl.DateTimeFormat([], options);
 
 
+/**
+ * 
+ * @param {string} n 
+ * @returns {string}
+ * @description strip the float number to 12 digits to deal with javascript dumb float number
+ */
+function stripNum(n) {
+    return (parseFloat(n).toPrecision(12));
+}
+
 function readInput() {
     const data = fs.readFileSync('input.txt', { encoding: 'utf8', flag: 'r' });
     numbersArray = data
         .trim()
         .split('\n')
-        .map((line) => parseFloat(line));
+        .map((line) => stripNum(line));
 }
 
 /**
@@ -84,6 +103,18 @@ function myTimer() {
     timerLabel.textContent = parseInt(timerLabel.textContent) + 1;
 }
 
+
+/**
+ * 
+ * @param {string} str 
+ * @returns 
+ */
+function isNumeric(str) {
+    if (typeof str != "string") return false // we only process strings!  
+    return !isNaN(str) && // use type coercion to parse the _entirety_ of the string (`parseFloat` alone does not do this)...
+           !isNaN(parseFloat(str)) // ...and ensure strings of whitespace fail
+  }
+
 $(document).ready(function () {
     $("#startButton").click(function () {
         console.log('start test')
@@ -142,10 +173,10 @@ $(document).ready(function () {
     $("#inputText").keyup((event) => {
         if (event.key === 'Enter') {
             let inputText = $('#inputText');
-            const userNumber = parseFloat(inputText.val())
+            const userNumber = stripNum(inputText.val())
             inputText.val('');
 
-            if (isNaN(userNumber)) {
+            if (!isNumeric(userNumber)) {
                 $("#errorMsg").css("visibility", 'visible');
 
 
@@ -172,9 +203,9 @@ $(document).ready(function () {
                     $("#expectedSum").text("而实际的总合计为: " + expected_sum);
 
                     if (user_sum === expected_sum) {
-                        $("#compareResult").text("您的结果正确！");
+                        $("#compareResult").text("您的合计正确！具体如下：");
                     } else {
-                        $("#compareResult").text("您的结果错误！具体错误如下：");
+                        $("#compareResult").text("您的合计错误！具体如下：");
 
                     }
                     let tableBody = $("#compareTable tbody");
@@ -203,14 +234,20 @@ $(document).ready(function () {
 
 });
 
+/**
+ * 
+ * @param {string[]} expectedArray 
+ * @param {string[]} userInputArray 
+ * @returns {string[]}
+ */
 function compareResults(expectedArray, userInputArray) {
     let expected_sum = 0;
     let user_sum = 0;
 
     // iterate over each item in the array
     for (let i = 0; i < expectedArray.length; i++) {
-        expected_sum += expectedArray[i];
-        user_sum += userInputArray[i]
+        expected_sum += parseFloat(expectedArray[i]);
+        user_sum += parseFloat(userInputArray[i]);
     }
-    return [expected_sum, user_sum];
+    return [stripNum(expected_sum), stripNum(user_sum)];
 }

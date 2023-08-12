@@ -33,6 +33,11 @@ You can also check your score history 查看历史成绩:
 
 # Installation
 
+To run the app in developer mode, execute
+```
+npm start
+```
+
 ## Option 1. Install executable
 You can install the executables from [the release page](https://github.com/epigone707/summonsTyper/releases/tag/v1.0)
 
