@@ -199,8 +199,8 @@ $(document).ready(function () {
 
                     $("#scoreBoard").css("display", 'block');
                     $("#resultSummary").text("您总共输入了" + numbersArray.length + "张传票，用时" + timerLabel.text() + "秒。");
-                    $("#userSum").text("您输入的总合计为: " + user_sum);
-                    $("#expectedSum").text("而实际的总合计为: " + expected_sum);
+                    $("#userSum").text("您输入的总合计为: " + parseFloat(user_sum));
+                    $("#expectedSum").text("而实际的总合计为: " + parseFloat(expected_sum));
 
                     if (user_sum === expected_sum) {
                         $("#compareResult").text("您的合计正确！具体如下：");
@@ -212,13 +212,13 @@ $(document).ready(function () {
 
                     let incorrectNumber = 0;
                     for (let i = 0; i < numbersArray.length; i++) {
-                        if (numbersArray[i] === userInputArray[i]) {
-                            console.log("numbersArray[i]:", numbersArray[i])
-                            console.log("userInputArray[i]:", userInputArray[i])
-                            newRow = "<tr><td>" + userInputArray[i] + "</td><td>" + numbersArray[i] + "</td></tr>";
+                        let u = parseFloat(userInputArray[i]);
+                        let n = parseFloat(numbersArray[i]);
+                        if (userInputArray[i] === numbersArray[i]) {
+                            newRow = "<tr><td>" + u + "</td><td>" + n + "</td></tr>";
                         } else {
                             incorrectNumber += 1;
-                            newRow = "<tr class='wrongRow'><td>" + userInputArray[i] + "</td><td>" + numbersArray[i] + "</td></tr>";
+                            newRow = "<tr class='wrongRow'><td>" + u + "</td><td>" + n + "</td></tr>";
                         }
 
                         tableBody.append(newRow);
