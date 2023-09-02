@@ -132,7 +132,9 @@ $(document).ready(function () {
 
         $("#startButton").css("display", "none");
         $("#exitButton").css("display", "block");
+        $("#historyButton").css("display", 'none');
         $("#msg").css("visibility", 'hidden');
+        document.getElementById("inputText").focus();
     });
 
     $("#exitButton").click(function () {
@@ -140,9 +142,11 @@ $(document).ready(function () {
         numbersArray = [];
         userInputArray = [];
         $("#startButton").css("display", "block");
+        $("#historyButton").css("display", 'block');
         $("#exitButton").css("display", "none");
         $('#testPanel').css("display", 'none');
         $("#scoreBoard").css("display", 'none');
+        $("#historyBoard").css("display", 'none');
         clearInterval(intervalId);
         $("#compareTable tbody tr").remove();
         $("#countLabel").text("1");
