@@ -112,8 +112,8 @@ function myTimer() {
 function isNumeric(str) {
     if (typeof str != "string") return false // we only process strings!  
     return !isNaN(str) && // use type coercion to parse the _entirety_ of the string (`parseFloat` alone does not do this)...
-           !isNaN(parseFloat(str)) // ...and ensure strings of whitespace fail
-  }
+        !isNaN(parseFloat(str)) // ...and ensure strings of whitespace fail
+}
 
 $(document).ready(function () {
     $("#startButton").click(function () {
@@ -180,59 +180,56 @@ $(document).ready(function () {
             const userNumber = stripNum(inputText.val())
             inputText.val('');
 
-            if (!isNumeric(userNumber)) {
-                $("#errorMsg").css("visibility", 'visible');
 
 
+            $("#errorMsg").css("visibility", 'hidden');
+            userInputArray.push(userNumber);
+
+            if (userInputArray.length < numbersArray.length) {
+                console.log('userInputArray.length < numbersArray.length')
+                const tmp = userInputArray.length + 1;
+                $("#countLabel").text(tmp.toString());
             } else {
-                $("#errorMsg").css("visibility", 'hidden');
-                userInputArray.push(userNumber);
+                console.log('userInputArray.length >= numbersArray.length')
+                clearInterval(intervalId);
+                let timerLabel = $('#timerLabel');
 
-                if (userInputArray.length < numbersArray.length) {
-                    console.log('userInputArray.length < numbersArray.length')
-                    const tmp = userInputArray.length + 1;
-                    $("#countLabel").text(tmp.toString());
+                const [expected_sum, user_sum] = compareResults(numbersArray, userInputArray);
+
+                $('#testPanel').css("display", 'none');
+
+                $("#scoreBoard").css("display", 'block');
+                $("#resultSummary").text("您总共输入了" + numbersArray.length + "张传票，用时" + timerLabel.text() + "秒。");
+                $("#userSum").text("您输入的总合计为: " + parseFloat(user_sum));
+                $("#expectedSum").text("而实际的总合计为: " + parseFloat(expected_sum));
+
+                if (user_sum === expected_sum) {
+                    $("#compareResult").text("您的合计正确！具体如下：");
                 } else {
-                    console.log('userInputArray.length >= numbersArray.length')
-                    clearInterval(intervalId);
-                    let timerLabel = $('#timerLabel');
+                    $("#compareResult").text("您的合计错误！具体如下：");
 
-                    const [expected_sum, user_sum] = compareResults(numbersArray, userInputArray);
-
-                    $('#testPanel').css("display", 'none');
-
-                    $("#scoreBoard").css("display", 'block');
-                    $("#resultSummary").text("您总共输入了" + numbersArray.length + "张传票，用时" + timerLabel.text() + "秒。");
-                    $("#userSum").text("您输入的总合计为: " + parseFloat(user_sum));
-                    $("#expectedSum").text("而实际的总合计为: " + parseFloat(expected_sum));
-
-                    if (user_sum === expected_sum) {
-                        $("#compareResult").text("您的合计正确！具体如下：");
-                    } else {
-                        $("#compareResult").text("您的合计错误！具体如下：");
-
-                    }
-                    let tableBody = $("#compareTable tbody");
-
-                    let incorrectNumber = 0;
-                    for (let i = 0; i < numbersArray.length; i++) {
-                        let u = parseFloat(userInputArray[i]);
-                        let n = parseFloat(numbersArray[i]);
-                        if (userInputArray[i] === numbersArray[i]) {
-                            newRow = "<tr><td>" + u + "</td><td>" + n + "</td></tr>";
-                        } else {
-                            incorrectNumber += 1;
-                            newRow = "<tr class='wrongRow'><td>" + u + "</td><td>" + n + "</td></tr>";
-                        }
-
-                        tableBody.append(newRow);
-                    }
-
-                    let historyArray = readHistory();
-                    addToHistory(historyArray, formatter.format(new Date()), incorrectNumber.toString(), timerLabel.text());
-                    $("#historyButton").css("display", 'block');
                 }
+                let tableBody = $("#compareTable tbody");
+
+                let incorrectNumber = 0;
+                for (let i = 0; i < numbersArray.length; i++) {
+                    let u = parseFloat(userInputArray[i]);
+                    let n = parseFloat(numbersArray[i]);
+                    if (userInputArray[i] === numbersArray[i]) {
+                        newRow = "<tr><td>" + u + "</td><td>" + n + "</td></tr>";
+                    } else {
+                        incorrectNumber += 1;
+                        newRow = "<tr class='wrongRow'><td>" + u + "</td><td>" + n + "</td></tr>";
+                    }
+
+                    tableBody.append(newRow);
+                }
+
+                let historyArray = readHistory();
+                addToHistory(historyArray, formatter.format(new Date()), incorrectNumber.toString(), timerLabel.text());
+                $("#historyButton").css("display", 'block');
             }
+
         }
     });
 
@@ -251,7 +248,10 @@ function compareResults(expectedArray, userInputArray) {
     // iterate over each item in the array
     for (let i = 0; i < expectedArray.length; i++) {
         expected_sum += parseFloat(expectedArray[i]);
-        user_sum += parseFloat(userInputArray[i]);
+
+        if (isNumeric(userInputArray[i])) {
+            user_sum += parseFloat(userInputArray[i]);
+        }
     }
     return [stripNum(expected_sum), stripNum(user_sum)];
 }
